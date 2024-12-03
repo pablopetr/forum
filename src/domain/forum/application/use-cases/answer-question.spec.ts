@@ -1,13 +1,13 @@
-import { InMemoryQuestionsRepository } from '../../../../../test/repositories/in-memory-answers-repository'
 import { beforeEach } from 'vitest'
 import { AnswerQuestionUseCase } from '@/domain/forum/application/use-cases/answer-question'
+import { InMemoryAnswersRepository } from '../../../../../test/repositories/in-memory-answers-repository'
 
-let inMemoryAnswersRepository = new InMemoryQuestionsRepository()
+let inMemoryAnswersRepository = new InMemoryAnswersRepository()
 let sut: AnswerQuestionUseCase
 
 describe('Answer Question', () => {
   beforeEach(() => {
-    inMemoryAnswersRepository = new InMemoryQuestionsRepository()
+    inMemoryAnswersRepository = new InMemoryAnswersRepository()
     sut = new AnswerQuestionUseCase(inMemoryAnswersRepository)
   })
 

@@ -1,6 +1,7 @@
 import { CreateQuestionUseCase } from '@/domain/forum/application/use-cases/create-question'
 import { beforeEach, expect, it } from 'vitest'
-import { InMemoryQuestionsRepository } from '../../../../../test/repositories/in-memory-answers-repository'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { InMemoryQuestionsRepository } from '../../../../../test/repositories/in-memory-questions-repository'
 
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository
 let sut: CreateQuestionUseCase
@@ -13,7 +14,7 @@ describe('Create Question', () => {
 
   it('should be able to create a question', async () => {
     const { question } = await sut.execute({
-      authorId: '1',
+      authorId: new UniqueEntityID(),
       title: 'title',
       content: 'content',
     })
