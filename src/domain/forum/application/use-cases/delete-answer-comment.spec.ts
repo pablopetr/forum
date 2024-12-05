@@ -53,12 +53,12 @@ describe('Delete Answer Comment', () => {
 
     await inMemoryAnswerCommentsRepository.create(answerComment)
 
-    expect(
+    await expect(
       async () =>
         await sut.execute({
           authorId: 'another-author-id',
-          answerCommentId: answerComment.id,
+          answerCommentId: answerComment.id.toString(),
         }),
-    )
+    ).rejects.toThrow('Not allowed')
   })
 })
