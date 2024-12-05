@@ -15,7 +15,7 @@ export class AnswerComment extends Comment<AnswerCommentProps> {
   }
 
   public static create(
-    props: AnswerCommentProps,
+    props: Partial<AnswerCommentProps>,
     id?: UniqueEntityID,
   ): AnswerComment {
     return new AnswerComment(props, id)
