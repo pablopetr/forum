@@ -13,11 +13,11 @@ describe('Fetch Recent Questions', () => {
   })
 
   it('should be able to fetch recent questions', async () => {
-    const newQuestionDate = new Date()
-    newQuestionDate.setDate(newQuestionDate.getDate() - 1)
+    const newQuestionDate = new Date().setDate(new Date().getDate() - 1)
+    const newQuestionDate2 = new Date().setDate(new Date().getDate())
 
     const newQuestion = makeQuestion({ createdAt: newQuestionDate })
-    const newQuestion2 = makeQuestion()
+    const newQuestion2 = makeQuestion({ createdAt: newQuestionDate2 })
 
     await inMemoryQuestionsRepository.create(newQuestion)
 
@@ -25,14 +25,14 @@ describe('Fetch Recent Questions', () => {
 
     const response = await sut.execute({ page: 1 })
 
-    expect(response.questions).toHaveLength(2)
+    expect(response.value.questions).toHaveLength(2)
 
-    expect(response.questions[1]).toMatchObject({
+    expect(response.value.questions[1]).toMatchObject({
       title: newQuestion.title,
       content: newQuestion.content,
     })
 
-    expect(response.questions[0]).toMatchObject({
+    expect(response.value.questions[0]).toMatchObject({
       title: newQuestion2.title,
       content: newQuestion2.content,
     })
@@ -45,6 +45,6 @@ describe('Fetch Recent Questions', () => {
 
     const response = await sut.execute({ page: 2 })
 
-    expect(response.questions).toHaveLength(2)
+    expect(response.value.questions).toHaveLength(2)
   })
 })

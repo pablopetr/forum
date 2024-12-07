@@ -4,6 +4,7 @@ import { beforeEach, expect } from 'vitest'
 import { makeQuestion } from '../../../../../test/factories/make-question'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { Slug } from '@/domain/forum/enterprise/entities/value-objects/slug'
+import { NotAllowedError } from '@/domain/forum/application/use-cases/errors/not-allowed-error'
 
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository
 let sut: EditQuestionUseCase
@@ -52,13 +53,14 @@ describe('Edit Question', () => {
 
     expect(inMemoryQuestionsRepository.items).toHaveLength(1)
 
-    await expect(
-      sut.execute({
-        authorId: 'author-2',
-        title: 'Question Test',
-        content: 'content',
-        questionId: newQuestion.id.toValue(),
-      }),
-    ).rejects.toThrowError('Not allowed')
+    const result = await sut.execute({
+      authorId: 'author-2',
+      title: 'Question Test',
+      content: 'content',
+      questionId: newQuestion.id.toValue(),
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 })

@@ -31,7 +31,7 @@ describe('Fetch Question Answers', () => {
       page: 1,
     })
 
-    expect(response.answers).toEqual([answer1, answer2])
+    expect(response.value.answers).toEqual([answer1, answer2])
   })
 
   it('should be able to fetch question answers paginated', async () => {
@@ -48,6 +48,6 @@ describe('Fetch Question Answers', () => {
       page: 2,
     })
 
-    expect(response.answers.length).toBe(2)
+    expect(response.value.answers.length).toBe(2)
   })
 })

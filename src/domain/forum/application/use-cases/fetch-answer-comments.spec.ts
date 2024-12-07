@@ -5,6 +5,8 @@ import { beforeEach } from 'vitest'
 import { makeAnswer } from '../../../../../test/factories/make-answer'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { makeAnswerComment } from '../../../../../test/factories/make-answer-comment'
+import { NotAllowedError } from '@/domain/forum/application/use-cases/errors/not-allowed-error'
+import { ResourceNotFoundError } from '@/domain/forum/application/use-cases/errors/resource-not-found-error'
 
 let inMemoryAnswersRepository: InMemoryAnswersRepository
 let inMemoryAnswerCommentsRepository: InMemoryAnswerCommentsRepository
@@ -47,7 +49,7 @@ describe('Fetch Answer Comments', () => {
       page: 1,
     })
 
-    expect(response.answerComments).toEqual([comment1, comment2])
+    expect(response.value.answerComments).toEqual([comment1, comment2])
   })
 
   it('should be able to fetch answer comments paginated', async () => {
@@ -68,16 +70,16 @@ describe('Fetch Answer Comments', () => {
       page: 2,
     })
 
-    expect(response.answerComments).toHaveLength(2)
+    expect(response.value.answerComments).toHaveLength(2)
   })
 
   it('should not be able to fetch answer comments from an answer that does not exist', async () => {
-    await expect(
-      async () =>
-        await sut.execute({
-          answerId: 'answer-id',
-          page: 1,
-        }),
-    ).rejects.toThrow('Answer not found')
+    const result = await sut.execute({
+      answerId: 'answer-id',
+      page: 1,
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 })

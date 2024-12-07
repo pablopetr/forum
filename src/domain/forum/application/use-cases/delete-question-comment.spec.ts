@@ -1,10 +1,10 @@
-import { InMemoryQuestionsRepository } from '../../../../../test/repositories/in-memory-questions-repository'
 import { InMemoryQuestionCommentsRepository } from '../../../../../test/repositories/in-memory-question-comments-repository'
-import { CommentOnAnswerUseCase } from '@/domain/forum/application/use-cases/comment-on-answer'
 import { beforeEach } from 'vitest'
 import { DeleteQuestionCommentUseCase } from '@/domain/forum/application/use-cases/delete-question-comment'
 import { makeQuestionComment } from '../../../../../test/factories/make-question-comment'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { ResourceNotFoundError } from '@/domain/forum/application/use-cases/errors/resource-not-found-error'
+import { NotAllowedError } from '@/domain/forum/application/use-cases/errors/not-allowed-error'
 
 let inMemoryQuestionCommentsRepository: InMemoryQuestionCommentsRepository
 let sut: DeleteQuestionCommentUseCase
@@ -34,28 +34,31 @@ describe('Delete Question Commend', () => {
   })
 
   it('should not be able to delete a question comment that does not exist', async () => {
-    await expect(
-      async () =>
-        await sut.execute({
-          authorId: 'author-id',
-          questionCommentId: 'question-comment-id',
-        }),
-    ).rejects.toThrow('Comment not found')
+    const result = await sut.execute({
+      authorId: 'author-id',
+      questionCommentId: 'question-comment-id',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 
   it('should not be able to delete a question comment that does not belong to the user', async () => {
-    const questionComment = makeQuestionComment({
-      authorId: new UniqueEntityID('author-id'),
-    })
+    const questionComment = makeQuestionComment(
+      {
+        authorId: new UniqueEntityID('author-id'),
+      },
+      new UniqueEntityID('question-comment-id'),
+    )
 
     await inMemoryQuestionCommentsRepository.create(questionComment)
 
-    expect(
-      async () =>
-        await sut.execute({
-          authorId: 'another-author-id',
-          questionCommentId: questionComment.id,
-        }),
-    )
+    const result = await sut.execute({
+      authorId: 'another-author-id',
+      questionCommentId: 'question-comment-id',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 })

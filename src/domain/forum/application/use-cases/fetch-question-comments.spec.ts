@@ -5,6 +5,7 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { makeQuestionComment } from '../../../../../test/factories/make-question-comment'
 import { makeQuestion } from '../../../../../test/factories/make-question'
 import { InMemoryQuestionsRepository } from '../../../../../test/repositories/in-memory-questions-repository'
+import { ResourceNotFoundError } from '@/domain/forum/application/use-cases/errors/resource-not-found-error'
 
 let inMemoryQuestionCommentsRepository: InMemoryQuestionCommentsRepository
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository
@@ -47,7 +48,7 @@ describe('Fetch question comments', () => {
       page: 1,
     })
 
-    expect(response.questionComments).toEqual([
+    expect(response.value.questionComments).toEqual([
       questionComment1,
       questionComment2,
     ])
@@ -71,16 +72,16 @@ describe('Fetch question comments', () => {
       page: 2,
     })
 
-    expect(response.questionComments.length).toBe(2)
+    expect(response.value.questionComments.length).toBe(2)
   })
 
   it('should not be able to fetch question comments if question does not exist', async () => {
-    await expect(
-      async () =>
-        await sut.execute({
-          questionId: 'question-id',
-          page: 1,
-        }),
-    ).rejects.toThrow('Question not found')
+    const result = await sut.execute({
+      questionId: 'question-id',
+      page: 1,
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 })
