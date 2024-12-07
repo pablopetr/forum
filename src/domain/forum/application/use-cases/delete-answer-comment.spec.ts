@@ -4,6 +4,8 @@ import { beforeEach, expect } from 'vitest'
 import { DeleteAnswerCommentUseCase } from '@/domain/forum/application/use-cases/delete-answer-comment'
 import { makeAnswerComment } from '../../../../../test/factories/make-answer-comment'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { NotAllowedError } from '@/domain/forum/application/use-cases/errors/not-allowed-error'
+import { ResourceNotFoundError } from '@/domain/forum/application/use-cases/errors/resource-not-found-error'
 
 let inMemoryAnswerCommentsRepository: InMemoryAnswerCommentsRepository
 let sut: DeleteAnswerCommentUseCase
@@ -39,13 +41,13 @@ describe('Delete Answer Comment', () => {
 
     await inMemoryAnswerCommentsRepository.create(answerComment)
 
-    await expect(
-      async () =>
-        await sut.execute({
-          authorId: 'author-id',
-          answerCommentId: 'answer-comment-id',
-        }),
-    ).rejects.toThrow('Comment not found')
+    const response = await sut.execute({
+      authorId: 'author-id',
+      answerCommentId: 'answer-comment-id',
+    })
+
+    expect(response.isLeft()).toBe(true)
+    expect(response.value).toBeInstanceOf(ResourceNotFoundError)
   })
 
   it('should not be able to delete answer comment that does not belong to the user', async () => {
@@ -53,12 +55,12 @@ describe('Delete Answer Comment', () => {
 
     await inMemoryAnswerCommentsRepository.create(answerComment)
 
-    await expect(
-      async () =>
-        await sut.execute({
-          authorId: 'another-author-id',
-          answerCommentId: answerComment.id.toString(),
-        }),
-    ).rejects.toThrow('Not allowed')
+    const result = await sut.execute({
+      authorId: 'another-author-id',
+      answerCommentId: answerComment.id.toString(),
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 })
