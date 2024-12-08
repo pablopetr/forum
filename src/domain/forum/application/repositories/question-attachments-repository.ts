@@ -6,4 +6,5 @@ export interface QuestionAttachmentsRepository {
     questionId: string,
     params?: PaginationForm,
   ): Promise<QuestionAttachment[]>
+  deleteManyByQuestionId(questionId: string): Promise<void>
 }
