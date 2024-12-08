@@ -33,14 +33,12 @@ export class CreateQuestionUseCase {
       content,
     })
 
-    const questionAttachments = attachmentsIds.map((attachmentId) =>
+    question.attachments = attachmentsIds.map((attachmentId) =>
       QuestionAttachment.create({
         attachmentId: new UniqueEntityID(attachmentId),
         questionId: question.id,
       }),
     )
-
-    question.attachments = questionAttachments
 
     await this.questionsRepository.create(question)
 
