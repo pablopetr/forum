@@ -5,7 +5,7 @@ import { beforeEach, describe, expect } from 'vitest'
 import { makeQuestion } from '../../../../../test/factories/make-question'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { w } from '@faker-js/faker/dist/airline-BnpeTvY9'
-import { ResourceNotFoundError } from '@/domain/forum/application/use-cases/errors/resource-not-found-error'
+import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository
 let InMemoryCommentsRepository: InMemoryQuestionCommentsRepository

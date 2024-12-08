@@ -4,7 +4,7 @@ import { CommentOnAnswerUseCase } from '@/domain/forum/application/use-cases/com
 import { beforeEach, expect } from 'vitest'
 import { makeAnswer } from '../../../../../test/factories/make-answer'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { ResourceNotFoundError } from '@/domain/forum/application/use-cases/errors/resource-not-found-error'
+import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 
 let inMemoryAnswersRepository: InMemoryAnswersRepository
 let inMemoryAnswerCommentsRepository: InMemoryAnswerCommentsRepository
