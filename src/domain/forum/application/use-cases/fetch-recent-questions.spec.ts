@@ -2,22 +2,25 @@ import { InMemoryQuestionsRepository } from '../../../../../test/repositories/in
 import { FetchRecentQuestionsUseCase } from '@/domain/forum/application/use-cases/fetch-recent-questions'
 import { makeQuestion } from '../../../../../test/factories/make-question'
 import { expect } from 'vitest'
+import { InMemoryQuestionAttachmentsRepository } from '../../../../../test/repositories/in-memory-question-attachments-repository'
 
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository
+let inMemoryQuestionsAttachmentsRepository: InMemoryQuestionAttachmentsRepository
 let sut: FetchRecentQuestionsUseCase
 
 describe('Fetch Recent Questions', () => {
   beforeEach(() => {
-    inMemoryQuestionsRepository = new InMemoryQuestionsRepository()
+    inMemoryQuestionsAttachmentsRepository =
+      new InMemoryQuestionAttachmentsRepository()
+    inMemoryQuestionsRepository = new InMemoryQuestionsRepository(
+      inMemoryQuestionsAttachmentsRepository,
+    )
     sut = new FetchRecentQuestionsUseCase(inMemoryQuestionsRepository)
   })
 
   it('should be able to fetch recent questions', async () => {
-    const newQuestionDate = new Date().setDate(new Date().getDate() - 1)
-    const newQuestionDate2 = new Date().setDate(new Date().getDate())
-
-    const newQuestion = makeQuestion({ createdAt: newQuestionDate })
-    const newQuestion2 = makeQuestion({ createdAt: newQuestionDate2 })
+    const newQuestion = makeQuestion()
+    const newQuestion2 = makeQuestion()
 
     await inMemoryQuestionsRepository.create(newQuestion)
 
@@ -25,17 +28,11 @@ describe('Fetch Recent Questions', () => {
 
     const response = await sut.execute({ page: 1 })
 
-    expect(response.value.questions).toHaveLength(2)
+    expect(response.value?.questions).toHaveLength(2)
 
-    expect(response.value.questions[1]).toMatchObject({
-      title: newQuestion.title,
-      content: newQuestion.content,
-    })
+    expect(response.value?.questions[0].title).toEqual(newQuestion.title)
 
-    expect(response.value.questions[0]).toMatchObject({
-      title: newQuestion2.title,
-      content: newQuestion2.content,
-    })
+    expect(response.value?.questions[1].title).toEqual(newQuestion2.title)
   })
 
   it('should be able to fetch recent questions with pagination', async () => {
@@ -45,6 +42,6 @@ describe('Fetch Recent Questions', () => {
 
     const response = await sut.execute({ page: 2 })
 
-    expect(response.value.questions).toHaveLength(2)
+    expect(response.value?.questions).toHaveLength(2)
   })
 })

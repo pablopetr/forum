@@ -19,4 +19,10 @@ export class InMemoryAnswersAttachmentRepository
       (item) => item.answerId.toString() !== answerId,
     ))
   }
+
+  async deleteManyByAnswerId(answerId: string): Promise<void> {
+    this.items = this.items.filter(
+      (item) => item.answerId.toString() !== answerId,
+    )
+  }
 }

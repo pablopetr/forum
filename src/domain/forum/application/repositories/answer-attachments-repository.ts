@@ -6,5 +6,5 @@ export interface AnswerAttachmentsRepository {
     answerId: string,
     params?: PaginationForm,
   ): Promise<AnswerAttachment[]>
-  deleteManyByQuestionId(answerId: string): Promise<void>
+  deleteManyByAnswerId(answerId: string): Promise<void>
 }
